@@ -1,0 +1,51 @@
+{
+  "name": "@uiw/react-csv-reader",
+  "version": "0.0.1",
+  "description": "React component that handles csv file input and its parsing.",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "homepage": "https://uiwjs.github.io/react-csv-reader",
+  "exports": {
+    "./README.md": "./README.md",
+    ".": {
+      "import": "./esm/index.js",
+      "types": "./cjs/index.d.ts",
+      "require": "./cjs/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uiwjs/react-csv-reader.git"
+  },
+  "author": "Kenny Wang<wowohoo@qq.com>",
+  "license": "MIT",
+  "files": [
+    "cjs",
+    "esm"
+  ],
+  "keywords": [
+    "component",
+    "react",
+    "react-component",
+    "react-csv",
+    "csv-reader",
+    "react-csv-reader",
+    "reader"
+  ],
+  "peerDependencies": {
+    "@babel/runtime": ">=7.10.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "@types/papaparse": "^5.3.7",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@types/react-test-renderer": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-test-renderer": "^18.2.0"
+  }
+}
