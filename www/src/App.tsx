@@ -28,7 +28,7 @@ const Wrappper = styled('div')`
 export default function App() {
   return (
     <Wrappper>
-      <GitHubCorners fixed target="__blank" zIndex={10} href="https://github.com/uiwjs/react-json-view" />
+      <GitHubCorners fixed target="__blank" zIndex={10} href="https://github.com/uiwjs/react-csv-reader" />
       <Header>
         <h1>
         CSV Reader for React<SupVersion>v{VERSION}</SupVersion>
