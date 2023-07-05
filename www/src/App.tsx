@@ -1,5 +1,6 @@
 import GitHubCorners from '@uiw/react-github-corners';
 import { styled } from "goober";
+import CSVReader from '@uiw/react-csv-reader';
 import MarkdownPreview from './Markdown';
 
 const Header = styled('header')`
@@ -33,6 +34,15 @@ export default function App() {
         <h1>
         CSV Reader for React<SupVersion>v{VERSION}</SupVersion>
         </h1>
+        <CSVReader
+          parserOptions={{
+            // header: true,
+            // worker: true,
+          }}
+          onFileLoaded={(data) => {
+            console.log('data:', data)
+          }}
+        />
       </Header>
       <MarkdownPreview />
     </Wrappper>

@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { parse, ParseConfig } from 'papaparse';
+import { parse, ParseConfig, ParseResult, ParseWorkerConfig, ParseLocalConfig, LocalFile } from 'papaparse';
 
 export interface IFileInfo {
   name: string;
@@ -8,18 +8,18 @@ export interface IFileInfo {
   modifiedAt: number;
 }
 
-export interface CSVReaderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onError'> {
+export interface CSVReaderProps<T,  TFile extends LocalFile = LocalFile> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onError'> {
   strict?: boolean;
-  fileEncoding?: string;
-  parserOptions?: ParseConfig;
+  encoding?: string;
+  parserOptions?: Partial<ParseWorkerConfig<T>> & Partial<ParseLocalConfig<T>> & ParseConfig<T, TFile>;
   onError?: (error: Error) => void;
   onFileLoaded: (data: Array<any>, fileInfo: IFileInfo, originalFile?: File) => void;
 }
 
-const CSVReader = forwardRef<HTMLInputElement, CSVReaderProps>((props, ref) => {
+const CSVReader = forwardRef<HTMLInputElement, CSVReaderProps<unknown>>((props, ref) => {
   const { 
     accept = '.csv, text/csv',
-    fileEncoding = 'UTF-8',
+    encoding = 'UTF-8',
     onError = () => {},
     parserOptions = {},
     onFileLoaded,
@@ -48,12 +48,12 @@ const CSVReader = forwardRef<HTMLInputElement, CSVReaderProps>((props, ref) => {
         const csvData = parse(reader.result as any, {
           ...parserOptions,
           error: onError,
-          encoding: fileEncoding,
-        } as ParseConfig);
+          encoding: encoding,
+        } as unknown as CSVReaderProps<any, any>['parserOptions']) as unknown as ParseResult<any>;
         onFileLoaded && onFileLoaded(csvData?.data ?? [], fileInfo, files[0]);
       }
 
-      reader.readAsText(files[0], fileEncoding)
+      reader.readAsText(files[0], encoding)
     }
   }
   return (

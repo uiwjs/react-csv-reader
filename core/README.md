@@ -1,8 +1,11 @@
 react-csv-reader
 ===
 
-React component that handles csv file input and its parsing.
+[![CI](https://github.com/uiwjs/react-csv-reader/actions/workflows/ci.yml/badge.svg)](https://github.com/uiwjs/react-csv-reader/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@uiw/react-csv-reader.svg)](https://www.npmjs.com/package/@uiw/react-csv-reader)
+[![NPM Downloads](https://img.shields.io/npm/dm/@uiw/react-csv-reader.svg?style=flat&label=)](https://www.npmjs.com/package/@uiw/react-csv-reader)
 
+React component that handles csv file input and its parsing. <!--rehype:ignore:start-->Example Preview: [uiwjs.github.io/react-csv-reader](https://uiwjs.github.io/react-csv-reader/)<!--rehype:ignore:end-->
 
 ## Quick Start
 
@@ -47,6 +50,8 @@ export default function Demo() {
 }
 ```
 
+**parserOptions**
+
 ```tsx mdx:preview
 import React, { useState } from 'react';
 import CSVReader from '@uiw/react-csv-reader';
@@ -55,12 +60,23 @@ import { lightTheme } from '@uiw/react-json-view/light';
 import { darkTheme } from '@uiw/react-json-view/dark';
 
 export default function Demo() {
+  const [parserOptions, setParserOptions] = useState({
+    header: true
+  });
   const [value, setValue] = useState([]);
   const [fileInfo, setFileInfo] = useState();
   const [originalFile, setOriginalFile] = useState();
+
+  const change = (evn) => {
+    console.log('evn:', evn.target.id)
+    console.log('evn:', evn.target.checked)
+    
+    setParserOptions({ ...parserOptions, [evn.target.id]: evn.target.checked })
+  }
   return (
     <React.Fragment>
       <CSVReader
+        parserOptions={parserOptions}
         onFileLoaded={(data, iFileInfo, iOriginalFile) => {
           setValue(data);
           setFileInfo(iFileInfo);
@@ -71,6 +87,29 @@ export default function Demo() {
           setOriginalFile(fileData);
         }}
       />
+      <div style={{ background: '#fff', padding: 10 }}>
+        <label>
+          <input type="checkbox" id="stream" checked={!!parserOptions.stream} onChange={change} /> Stream
+          <p style={{ whiteSpace :'pre-wrap' }}>Results are delivered row by row to a step function. Use with large inputs that would crash the browser.</p>
+        </label>
+        <label>
+          <input type="checkbox" id="worker" checked={!!parserOptions.worker} onChange={change} /> Worker thread
+          <p style={{ whiteSpace :'pre-wrap' }}>Uses a separate thread so the web page doesn't lock up. </p>
+        </label>
+        <label>
+          <input type="checkbox" id="header" checked={!!parserOptions.header} onChange={change} /> Header row
+          <p style={{ whiteSpace :'pre-wrap' }}>Keys data by field name rather than an array. </p>
+        </label>
+        <label>
+          <input type="checkbox" id="dynamicTyping" checked={!!parserOptions.dynamicTyping} onChange={change} /> Dynamic typing
+          <p style={{ whiteSpace :'pre-wrap' }}>Turns numeric data into numbers and true/false into booleans. </p>
+        </label>
+        <label>
+          <input type="checkbox" id="skipEmptyLines" checked={!!parserOptions.skipEmptyLines} onChange={change} /> Skip empty lines
+          <p style={{ whiteSpace :'pre-wrap' }}>By default, empty lines are parsed; check to skip. </p>
+        </label>
+      </div>
+
       {value && value.length > 0 && <JsonView keyName="data" value={value} collapsed={false} style={lightTheme} />}
       {fileInfo && <JsonView keyName="fileInfo" value={fileInfo} collapsed={false} style={darkTheme} />}
       {originalFile && <JsonView keyName="new File()" value={Object.assign(originalFile)} collapsed={false} style={lightTheme} />}
@@ -82,21 +121,21 @@ export default function Demo() {
 ## Props
 
 ```ts
-import { ParseConfig } from 'papaparse';
+import { ParseConfig, ParseWorkerConfig, ParseLocalConfig, LocalFile } from 'papaparse';
 export interface IFileInfo {
   name: string;
   size: number;
   type: string;
   modifiedAt: number;
 }
-export interface CSVReaderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onError'> {
+export interface CSVReaderProps<T, TFile extends LocalFile = LocalFile> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onError'> {
   strict?: boolean;
-  fileEncoding?: string;
-  parserOptions?: ParseConfig;
+  encoding?: string;
+  parserOptions?: Partial<ParseWorkerConfig<T>> & Partial<ParseLocalConfig<T>> & ParseConfig<T, TFile>;
   onError?: (error: Error) => void;
-  onFileLoaded: (data: Array<any>, fileInfo: IFileInfo, originalFile?: File) => any;
+  onFileLoaded: (data: Array<any>, fileInfo: IFileInfo, originalFile?: File) => void;
 }
-declare const CSVReader: import("react").ForwardRefExoticComponent<CSVReaderProps & import("react").RefAttributes<HTMLInputElement>>;
+declare const CSVReader: import("react").ForwardRefExoticComponent<CSVReaderProps<unknown, LocalFile> & import("react").RefAttributes<HTMLInputElement>>;
 export default CSVReader;
 ```
 
@@ -211,6 +250,69 @@ export interface ParseConfig<T = any, TInput = undefined> {
    */
   beforeFirstChunk?(chunk: string): string | void;
 }
+```
+
+```ts
+export interface ParseWorkerConfig<T = any> extends ParseConfig<T> {
+  /**
+   * Whether or not to use a worker thread.
+   * Using a worker will keep your page reactive, but may be slightly slower.
+   */
+  worker: true;
+  /**
+   * The callback to execute when parsing is complete.
+   * It receives the parse results. If parsing a local file, the File is passed in, too.
+   * When streaming, parse results are not available in this callback.
+   */
+  complete(results: ParseResult<T>): void;
+}
+```
+
+
+```ts
+// Base interface for all async parsing
+interface ParseAsyncConfigBase<T = any, TInput = undefined> extends ParseConfig<T, TInput> {
+  /**
+   * Whether or not to use a worker thread.
+   * Using a worker will keep your page reactive, but may be slightly slower.
+   * @default false
+   */
+  worker?: boolean | undefined;
+  /**
+   * Overrides `Papa.LocalChunkSize` and `Papa.RemoteChunkSize`.
+   */
+  chunkSize?: number | undefined;
+  /**
+   * A callback function, identical to `step`, which activates streaming.
+   * However, this function is executed after every chunk of the file is loaded and parsed rather than every row.
+   * Works only with local and remote files.
+   * Do not use both `chunk` and `step` callbacks together.
+   */
+  chunk?(results: ParseResult<T>, parser: Parser): void;
+  /**
+   * A callback to execute if FileReader encounters an error.
+   * The function is passed two arguments: the error and the File.
+   */
+  error?(error: Error, file: TInput): void;
+}
+
+// Async parsing local file can specify encoding
+interface ParseLocalConfigBase<T = any, TInput = undefined> extends ParseAsyncConfigBase<T, TInput> {
+  /** The encoding to use when opening local files. If specified, it must be a value supported by the FileReader API. */
+  encoding?: string | undefined;
+}
+
+interface ParseLocalConfigStep<T = any, TInput = undefined> extends ParseLocalConfigBase<T, TInput> {
+  /** @inheritdoc */
+  step(results: ParseStepResult<T>, parser: Parser): void;
+}
+interface ParseLocalConfigNoStep<T = any, TInput = undefined> extends ParseLocalConfigBase<T, TInput> {
+  /** @inheritdoc */
+  complete(results: ParseResult<T>, file: TInput): void;
+}
+
+// Local parsing is async and thus must specify either `step` or `complete` (but may specify both)
+export type ParseLocalConfig<T = any, TInput = undefined> = ParseLocalConfigStep<T, TInput> | ParseLocalConfigNoStep<T, TInput>;
 ```
 
 ## Development
