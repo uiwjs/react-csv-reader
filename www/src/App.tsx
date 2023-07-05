@@ -2,6 +2,7 @@ import GitHubCorners from '@uiw/react-github-corners';
 import CSVReader from '@uiw/react-csv-reader';
 import JsonView from '@uiw/react-json-view';
 import { lightTheme } from '@uiw/react-json-view/light';
+import BackToUp from '@uiw/react-back-to-top';
 import { styled } from "goober";
 import { CSSProperties, useState } from 'react';
 import MarkdownPreview from './Markdown';
@@ -65,6 +66,7 @@ export default function App() {
         </Examples>
       </Header>
       <MarkdownPreview />
+      <BackToUp>Top</BackToUp>
     </Wrappper>
   );
 }
