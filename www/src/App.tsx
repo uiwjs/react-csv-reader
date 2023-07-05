@@ -48,9 +48,10 @@ export default function App() {
               // header: true,
               // worker: true,
             }}
-            onFileLoaded={(data) => {
+            onFileLoaded={async (data, iFileInfo, iOriginalFile) => {
               setValue(data);
-              console.log('data:', data)
+              const txt = await iOriginalFile?.text()
+              console.log('data:', data, iFileInfo, iOriginalFile, txt)
             }}
           />
           {value && value.length > 0 && (

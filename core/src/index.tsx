@@ -13,7 +13,7 @@ export interface CSVReaderProps<T,  TFile extends LocalFile = LocalFile> extends
   encoding?: string;
   parserOptions?: Partial<ParseWorkerConfig<T>> & Partial<ParseLocalConfig<T>> & ParseConfig<T, TFile>;
   onError?: (error: Error) => void;
-  onFileLoaded: (data: Array<any>, fileInfo: IFileInfo, originalFile?: File) => void;
+  onFileLoaded: (data: Array<any>, fileInfo: IFileInfo, originalFile?: File, text?: string) => void;
 }
 
 const CSVReader = forwardRef<HTMLInputElement, CSVReaderProps<unknown>>((props, ref) => {
@@ -50,7 +50,7 @@ const CSVReader = forwardRef<HTMLInputElement, CSVReaderProps<unknown>>((props, 
           error: onError,
           encoding: encoding,
         } as unknown as CSVReaderProps<any, any>['parserOptions']) as unknown as ParseResult<any>;
-        onFileLoaded && onFileLoaded(csvData?.data ?? [], fileInfo, files[0]);
+        onFileLoaded && onFileLoaded(csvData?.data ?? [], fileInfo, files[0], reader.result as string);
       }
 
       reader.readAsText(files[0], encoding)

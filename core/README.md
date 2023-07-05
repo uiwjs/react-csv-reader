@@ -16,7 +16,9 @@ npm install @uiw/react-csv-reader
 ```jsx
 import CSVReader from '@uiw/react-csv-reader';
 
-<CSVReader />
+<CSVReader
+  onFileLoaded={(data, iFileInfo, iOriginalFile) => { }}
+/>
 ```
 
 
@@ -113,6 +115,33 @@ export default function Demo() {
       {value && value.length > 0 && <JsonView keyName="data" value={value} collapsed={false} style={lightTheme} />}
       {fileInfo && <JsonView keyName="fileInfo" value={fileInfo} collapsed={false} style={darkTheme} />}
       {originalFile && <JsonView keyName="new File()" value={Object.assign(originalFile)} collapsed={false} style={lightTheme} />}
+    </React.Fragment>
+  );
+}
+```
+
+**Get csv raw text content**
+
+The original text can also be obtained using `await iOriginalFile.text()`.
+
+```tsx mdx:preview
+import React, { useState } from 'react';
+import CSVReader from '@uiw/react-csv-reader';
+import JsonView from '@uiw/react-json-view';
+import { lightTheme } from '@uiw/react-json-view/light';
+
+export default function Demo() {
+  const [value, setValue] = useState('');
+  return (
+    <React.Fragment>
+      <CSVReader
+        onFileLoaded={(data, iFileInfo, iOriginalFile, text) => {
+          setValue(text);
+        }}
+      />
+      {value && value.length > 0 && (
+        <pre>{value}</pre>
+      )}
     </React.Fragment>
   );
 }
