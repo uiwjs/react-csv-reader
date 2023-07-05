@@ -17,7 +17,7 @@ npm install @uiw/react-csv-reader
 import CSVReader from '@uiw/react-csv-reader';
 
 <CSVReader
-  onFileLoaded={(data, iFileInfo, iOriginalFile) => { }}
+  onFileLoaded={(data, iFileInfo, iOriginalFile, text) => { }}
 />
 ```
 
@@ -35,7 +35,7 @@ export default function Demo() {
   return (
     <React.Fragment>
       <CSVReader
-        onFileLoaded={(data, iFileInfo, iOriginalFile) => {
+        onFileLoaded={(data, iFileInfo, iOriginalFile, text) => {
           setValue(data);
         }}
       />
@@ -162,7 +162,7 @@ export interface CSVReaderProps<T, TFile extends LocalFile = LocalFile> extends 
   encoding?: string;
   parserOptions?: Partial<ParseWorkerConfig<T>> & Partial<ParseLocalConfig<T>> & ParseConfig<T, TFile>;
   onError?: (error: Error) => void;
-  onFileLoaded: (data: Array<any>, fileInfo: IFileInfo, originalFile?: File) => void;
+  onFileLoaded: (data: Array<any>, fileInfo: IFileInfo, originalFile?: File, text?: string) => void;
 }
 declare const CSVReader: import("react").ForwardRefExoticComponent<CSVReaderProps<unknown, LocalFile> & import("react").RefAttributes<HTMLInputElement>>;
 export default CSVReader;
