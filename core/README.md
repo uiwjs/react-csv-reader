@@ -344,6 +344,10 @@ interface ParseLocalConfigNoStep<T = any, TInput = undefined> extends ParseLocal
 export type ParseLocalConfig<T = any, TInput = undefined> = ParseLocalConfigStep<T, TInput> | ParseLocalConfigNoStep<T, TInput>;
 ```
 
+## Related
+
+- [@uiw/react-xml-reader](https://uiwjs.github.io/react-xml-reader) React component that handles xml file input and its parsing.
+
 ## Development
 
 Runs the project in development mode.  
