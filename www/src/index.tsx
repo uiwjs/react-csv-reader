@@ -31,6 +31,7 @@ root.render(
     source={data.source}
     components={data.components}
     data={data.data}
+    description="React component that handles csv file input and its parsing."
     title="CSV Reader for React"
     version={`v${VERSION}`}
   >
