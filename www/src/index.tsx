@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client';
 import '@wcj/dark-mode';
 import App from './App';
 import { glob, setup } from 'goober';
+import MarkdownPreviewExample from '@uiw/react-markdown-preview-example';
+import data from '@uiw/react-csv-reader/README.md';
 
 setup(React.createElement);
 
@@ -19,16 +21,22 @@ glob`
   }
 `;
 
+const Github = MarkdownPreviewExample.Github;
+const Example = MarkdownPreviewExample.Example;
+
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <React.Fragment>
-    <dark-mode
-      permanent
-      dark="Dark"
-      light="Light"
-      style={{ position: 'fixed', top: 8, left: 12, zIndex: 99, fontSize: 32 }}
-    />
-    <App />
-  </React.Fragment>,
+  <MarkdownPreviewExample
+    source={data.source}
+    components={data.components}
+    data={data.data}
+    title="CSV Reader for React"
+    version={`v${VERSION}`}
+  >
+    <Github href="https://github.com/uiwjs/react-csv-reader" />
+    <Example>
+      <App />
+    </Example>
+  </MarkdownPreviewExample>,
 );
