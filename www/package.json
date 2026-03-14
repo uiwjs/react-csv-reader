@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "preview": true,
   "scripts": {
     "build": "kkt build",
@@ -8,7 +8,7 @@
     "map": "source-map-explorer build/static/js/*.js --html build/website-result.html"
   },
   "dependencies": {
-    "@uiw/react-csv-reader": "1.0.3",
+    "@uiw/react-csv-reader": "1.0.4",
     "@uiw/react-json-view": "^1.6.0",
     "@uiw/react-markdown-preview-example": "^2.1.5",
     "goober": "^2.1.13",
